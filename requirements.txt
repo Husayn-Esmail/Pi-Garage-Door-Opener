@@ -1,0 +1,3 @@
+waitress
+flask
+# install rpi gpio, i don't remember the specific name for this library
