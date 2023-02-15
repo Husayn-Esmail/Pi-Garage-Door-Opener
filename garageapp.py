@@ -64,8 +64,8 @@ def set_status():
 	GPIO.setmode(GPIO.BCM)
 	GPIO.steup(20, GPIO.OUT)
 	GPIO.setup(16, GPIO.IN)
-	print("status is working") # for debug/log purposes
 	state = irsensor.get_status()
+	print("status is working: %d" % state) # for debug/log purposes
 	if state: # the garage is open
 		status = 1
 	else: # the garage is closed
