@@ -1,3 +1,4 @@
 waitress
 flask
+paho.mqtt
 # install rpi gpio, i don't remember the specific name for this library
