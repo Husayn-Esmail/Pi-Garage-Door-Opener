@@ -1,6 +1,8 @@
 import time
 import paho.mqtt.client as mqtt
 
+# http://www.steves-internet-guide.com/into-mqtt-python-client/
+
 def subscribe(topic):
     client = mqtt.Client()
     client.connect("0.0.0.0", 1883, 60)
