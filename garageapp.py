@@ -30,6 +30,7 @@ def decide_open(topic, ip, port):
 
 # runs the mqtt server
 if __name__ == '__main__':
+	GPIO.setmode(GPIO.BCM)
 	listener_topic = ""
 	publisher_topic = ""
 	ip = ""

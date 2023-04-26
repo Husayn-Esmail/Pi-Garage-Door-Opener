@@ -26,6 +26,16 @@ GPIO.setup(16, GPIO.IN)
 GPIO.output(20, GPIO.HIGH)
 
 def get_status(topic, ip, port):
+	# Init GPIOs
+	# set GPIO pin mode
+	GPIO.setmode(GPIO.BCM)
+
+	# initialize pins
+	GPIO.setup(20, GPIO.OUT)
+	GPIO.setup(16, GPIO.IN)
+
+	# start the sensor
+	GPIO.output(20, GPIO.HIGH)
 	''' returns the state of the garage opener
 	note that the sensor data is reversed where true is that the
 	sensor data is reversed where True is that the garage is not
