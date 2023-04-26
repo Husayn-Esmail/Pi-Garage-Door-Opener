@@ -10,8 +10,10 @@ code via a post request. '''
 import json
 from flask import Flask, render_template, request
 import time
-import RPi.GPIO as GPIO
-import irsensor
+# import RPi.GPIO as GPIO
+# import irsensor
+import mqtt_listener
+import mqtt_publish
 
 app = Flask(__name__)
 
@@ -25,7 +27,7 @@ def decide_open(the_input, secret_code):
 	'''
 	if the_input == secret_code:
 		# executes the code to open the door
-		GPIO.output(21, 1)
+		# GPIO.output(21, 1)
 		time.sleep(1)
 		print("success") # for debug purposes/logs
 		return True
@@ -37,8 +39,8 @@ def decide_open(the_input, secret_code):
 @app.route('/', methods=['POST'])
 def index():
 	# handle post request
-	GPIO.setmode(GPIO.BCM)
-	GPIO.setup(21, GPIO.OUT)
+	# GPIO.setmode(GPIO.BCM)
+	# GPIO.setup(21, GPIO.OUT)
 	secret_code = "changeme"
 	# the new way to authenticate for triggering the garage door
 	secret_dict = {"code" : secret_code}
@@ -53,7 +55,7 @@ def index():
 			open_garage = decide_open(submission, secret_dict)
 
 	# otherwise handle get request
-	GPIO.cleanup()
+	# GPIO.cleanup()
 	return render_template('index.html') 
 
 
@@ -61,10 +63,11 @@ def index():
 # not necessary for functionality
 @app.route('/', methods=['GET'])
 def set_status():
-	GPIO.setmode(GPIO.BCM)
-	GPIO.steup(20, GPIO.OUT)
-	GPIO.setup(16, GPIO.IN)
-	state = irsensor.get_status()
+	# GPIO.setmode(GPIO.BCM)
+	# GPIO.setup(20, GPIO.OUT)
+	# GPIO.setup(16, GPIO.IN)
+	# state = irsensor.get_status()
+	state = 0
 	print("status is working: %d" % state) # for debug/log purposes
 	if state: # the garage is open
 		status = 1

@@ -3,6 +3,8 @@ import paho.mqtt.client as mqtt
 
 # http://www.steves-internet-guide.com/into-mqtt-python-client/
 
+# subscribe to /garage/target
+
 def subscribe(topic):
     client = mqtt.Client()
     client.connect("0.0.0.0", 1883, 60)
@@ -40,7 +42,7 @@ def sub(topic):
 
 
 if __name__ == "__main__":
-    channel = "mqtt_test_channel"
+    channel = "homebridge/gettarget"
     while True:
-        sub(channel)
+        sub(channel) == True
         # subscribe(channel)

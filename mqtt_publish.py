@@ -2,7 +2,7 @@ import time
 import paho.mqtt.client as mqtt
 # https://www.emqx.com/en/blog/how-to-use-mqtt-in-python how the publisher was written, i'm not a huge fan
 
-
+# listen to garage/state
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
@@ -20,16 +20,16 @@ def publish(topic, msg):
     msg_count = 0
     client = mqtt.Client()
     client.connect("0.0.0.0", 1883, 60)
-    while True:
-        time.sleep(1)
-        # msg = f"messages: {msg_count}"
-        result = client.publish(topic, msg)
-        status = result[0]
-        if status == 0:
-            print(f"Send `{msg}` to topic `{topic}`")
-        else:
-            print(f"Failed ot send message to {topic}")
-        msg_count += 1
+    time.sleep(1)
+    # msg = f"messages: {msg_count}"
+    result = client.publish(topic, msg)
+    status = result[0]
+    if status == 0:
+        print(f"Send `{msg}` to topic `{topic}`")
+    else:
+        print(f"Failed ot send message to {topic}")
+    msg_count += 1
+    return result
 
 
 
@@ -42,8 +42,18 @@ def publish_message(message, channel):
 
 if __name__ == '__main__':
     # data and channel
-    message = "I_have_a_message"
-    topic = "mqtt_test_channel"
-    while True:
-        input("press enter to publish")
-        publish(topic, message)
+    x = 1
+    while True: 
+        if x == 1:
+            message = "O"
+            topic = "homebridge/gettarget"
+            publish(topic, message)
+            x = 0
+        time.sleep(5)
+        if x == 0:
+            message = "C"
+            topic = "homebridge/gettarget"
+            publish(topic, message)
+            x = 1
+        input("press enter to receive")
+
