@@ -30,7 +30,15 @@ def decide_open(topic, ip, port):
 
 # runs the mqtt server
 if __name__ == '__main__':
+	# set GPIO pin mode
 	GPIO.setmode(GPIO.BCM)
+
+	# initialize pins
+	GPIO.setup(20, GPIO.OUT)
+	GPIO.setup(16, GPIO.IN)
+
+	# start the sensor
+	GPIO.output(20, GPIO.HIGH)
 	listener_topic = ""
 	publisher_topic = ""
 	ip = ""
