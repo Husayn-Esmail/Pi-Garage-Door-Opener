@@ -35,14 +35,16 @@ def manage_state():
 
 
 # decides whether to open the garage door or not
-def decide_open(the_input, secret_code):
+def decide_open(the_input, secret_code, topic, ip, port):
 	'''
 	This function handles flipping the momentary switch.
 	validates input against secret code, returns true or
 	false depending on whether the input matches and the
 	door can be opened.
 	'''
-	mqtt.setTargetListener("homebridge/settarget")
+	target = mqtt.setTargetListener(topic, ip, port)
+	if target:
+		trigger_relay()
 
 	if the_input == secret_code:
 		# executes the code to open the door
@@ -105,6 +107,13 @@ def set_status():
 # runs the webserver
 if __name__ == '__main__':
 	from waitress import serve
+	listener_topic = ""
+	publisher_topic = ""
+	
+	while True:
+		decide_open()
+		irsensor.get_status(publisher_topic)
+		time.sleep(1)
 	serve(app, host = "0.0.0.0", port = 8080)
 
 
