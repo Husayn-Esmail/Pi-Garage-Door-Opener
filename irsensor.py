@@ -8,8 +8,7 @@
 ''' This method is able to determine the state of the garage 
 namely: whether the garage is open or closed based on sensor
 value. Therefore there needs to be a function that determines
-it's state and returns a true or a flase value which can be
-passed in via a get request. '''
+it's state and returns a true or a false value'''
 import RPi.GPIO as GPIO
 import time
 import mqtt
@@ -26,7 +25,7 @@ GPIO.setup(16, GPIO.IN)
 # start the sensor
 GPIO.output(20, GPIO.HIGH)
 
-def get_status(topic):
+def get_status(topic, ip, port):
 	''' returns the state of the garage opener
 	note that the sensor data is reversed where true is that the
 	sensor data is reversed where True is that the garage is not
@@ -34,10 +33,10 @@ def get_status(topic):
 	state = GPIO.input(16)
 	# garage is closed
 	if state:
-		mqtt.getTargetPublisher(topic, "C")
+		mqtt.getTargetPublisher(topic, "C", ip, port)
 		return False
 	# garage is open
-	mqtt.getTargetPublisher(topic, "O")
+	mqtt.getTargetPublisher(topic, "O", ip , port)
 	return True
 
 
