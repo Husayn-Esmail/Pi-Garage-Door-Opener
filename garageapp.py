@@ -17,7 +17,7 @@ def trigger_relay():
 	time.sleep(1)
 
 # decides whether to open the garage door or not
-def decide_open(the_input, secret_code, topic, ip, port):
+def decide_open(topic, ip, port):
 	'''
 	This function handles flipping the momentary switch.
 	validates input against secret code, returns true or
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 	ip = ""
 	port = 0
 	while True:
-		decide_open()
-		irsensor.get_status(publisher_topic)
+		decide_open(listener_topic, ip, port)
+		irsensor.get_status(publisher_topic, ip , port)
 		time.sleep(1)
 	GPIO.cleanup()
