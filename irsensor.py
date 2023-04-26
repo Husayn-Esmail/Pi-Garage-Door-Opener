@@ -12,6 +12,7 @@ it's state and returns a true or a flase value which can be
 passed in via a get request. '''
 import RPi.GPIO as GPIO
 import time
+import mqtt
 
 print("irsensor being called") # for log/debug purposes
 # Init GPIOs
@@ -25,7 +26,7 @@ GPIO.setup(16, GPIO.IN)
 # start the sensor
 GPIO.output(20, GPIO.HIGH)
 
-def get_status():
+def get_status(topic):
 	''' returns the state of the garage opener
 	note that the sensor data is reversed where true is that the
 	sensor data is reversed where True is that the garage is not
@@ -33,8 +34,10 @@ def get_status():
 	state = GPIO.input(16)
 	# garage is closed
 	if state:
+		mqtt.getTargetPublisher(topic, "C")
 		return False
 	# garage is open
+	mqtt.getTargetPublisher(topic, "O")
 	return True
 
 

@@ -2,6 +2,7 @@ import time
 import paho.mqtt.client as mqtt
 # https://www.emqx.com/en/blog/how-to-use-mqtt-in-python how the publisher was written, i'm not a huge fan
 
+
 # listen to garage/state
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):

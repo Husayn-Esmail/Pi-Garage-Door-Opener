@@ -1,32 +1,50 @@
 import paho.mqtt.client as mqtt
-
+import time
 # need to add a user and password to the mosquitto configuration so that
 # not just anyone can publish to the server.
 
-
-
-def setTargetListener(topic, message, ip="127.0.0.1", port=1883):
+received = -1
+def setTargetListener(topic, ip="127.0.0.1", port=1883):
+    global received
+    """
+    Listens to an mqtt topic (string) for prespecified messages on
+    a given ip (strint) and port (integer). Returns 0 or 1 Depending
+    on the message received.
+    """
     # set listening client id
     client = mqtt.Client("target_listener")
     keepalive = 60
     client.connect(ip, port, keepalive)
-    received_message = ""
+    # used to handle message receiving
     def on_message(client, userdata, message):
+        global received # need to declare as a global or can't return
+        received = message.payload.decode('utf-8')
         print(f"Received {message.payload.decode()} from {message.topic} topic")
-        # store it outside the function so that I can access it's contents
-        received_message = message
     client.subscribe(topic)
     client.on_message = on_message
-    client.disconnect()
-    if received_message.payload.decode("utf-8") == "O":
-        return 1
-    elif received_message.payload.decode("utf-8") == "C":
+    # listen for 4 seconds at a time
+    client.loop_start()
+    time.sleep(4)
+    # need to do this inside the loop
+    if received == "O" or received == "C":
+        received = -1
+        client.loop_stop()
+        client.disconnect()
         return 1
     else:
+        client.loop_stop()
+        client.disconnect()
         return 0
 
 
+    
+
+
 def getTargetPublisher(topic, message, ip="127.0.0.1", port=1883):
+    """
+    Publishes a message (string) to an mqtt topic (string) at a given ip (string)
+    and given port (integer)
+    """
     # handles the connection to mqtt
     # def on_connect(client, userdata, flags, rc):
     #     if rc == 0:
@@ -52,3 +70,10 @@ def getTargetPublisher(topic, message, ip="127.0.0.1", port=1883):
     else:
         print("failed to publish to {topic} on {ip}:{port}")
     return result
+
+if __name__ == "__main__":
+    while True:
+        target = setTargetListener("homebridge/settarget")
+        print("target", target)
+        if target:
+            print("*******************************")

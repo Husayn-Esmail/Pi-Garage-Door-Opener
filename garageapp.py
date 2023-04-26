@@ -11,11 +11,28 @@ import json
 from flask import Flask, render_template, request
 import time
 # import RPi.GPIO as GPIO
-# import irsensor
-import mqtt_listener
-import mqtt_publish
+import irsensor
+import mqtt
+from multiprocessing import Process
 
-app = Flask(__name__)
+
+# NEW MOSQUITTO CODE
+def trigger_relay():
+	# sets the relay to flip for one second
+	GPIO.output(21, 1)
+	time.sleep(1)
+
+def manage_state():
+	GPIO.setmode(GPIO.BCM)
+	GPIO.setup(20, GPIO.OUT)
+	GPIO.setup(16, GPIO.IN)
+	state = irsensor.get_status()
+	topic = ""
+	ip = ""
+	port = 1883 # should be changed
+	message = "O" if state else "C" # basically saying if state is 1 then open, else closed
+	mqtt.getTargetPublisher(topic, message, ip , port)
+
 
 # decides whether to open the garage door or not
 def decide_open(the_input, secret_code):
@@ -25,6 +42,8 @@ def decide_open(the_input, secret_code):
 	false depending on whether the input matches and the
 	door can be opened.
 	'''
+	mqtt.setTargetListener("homebridge/settarget")
+
 	if the_input == secret_code:
 		# executes the code to open the door
 		# GPIO.output(21, 1)
@@ -34,6 +53,13 @@ def decide_open(the_input, secret_code):
 	# if code isn't equal
 	print("incorrect code") # for debug purposes/logs
 	return False
+
+
+
+
+# OLD WEB SERVER CODE
+app = Flask(__name__)
+
 
 # the backend code
 @app.route('/', methods=['POST'])
