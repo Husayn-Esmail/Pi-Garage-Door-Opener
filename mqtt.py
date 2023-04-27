@@ -13,8 +13,7 @@ def setTargetListener(topic, ip="127.0.0.1", port=1883):
     """
     # set listening client id
     client = mqtt.Client("target_listener")
-    keepalive = 60
-    client.connect(ip, port, keepalive)
+    client.connect(ip, port)
     # used to handle message receiving
     def on_message(client, userdata, message):
         global received # need to declare as a global or can't return

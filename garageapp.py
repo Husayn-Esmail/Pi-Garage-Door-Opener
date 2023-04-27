@@ -56,8 +56,6 @@ if __name__ == '__main__':
 
 			# reflects the real world state
 			status = irsensor.get_status(getCurrentState_topic, ip , port)
-			# if status == mqtt.setTargetListener(listener_topic, ip, port):
-			# 	mqtt.getTargetPublisher()
 			time.sleep(1)
 		except ConnectionRefusedError as err:
 			print("***** ERROR OCCURED: ConnectionRefusedError *****")
