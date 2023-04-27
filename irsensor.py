@@ -14,16 +14,6 @@ import time
 import mqtt
 
 print("irsensor being called") # for log/debug purposes
-# Init GPIOs
-# set GPIO pin mode
-GPIO.setmode(GPIO.BCM)
-
-# initialize pins
-GPIO.setup(20, GPIO.OUT)
-GPIO.setup(16, GPIO.IN)
-
-# start the sensor
-GPIO.output(20, GPIO.HIGH)
 
 def get_status(topic, ip, port):
 	# Init GPIOs

@@ -42,12 +42,15 @@ if __name__ == '__main__':
 
 	# start the sensor
 	GPIO.output(20, GPIO.HIGH)
-	listener_topic = ""
-	publisher_topic = ""
+	setTargetState_topic = ""
+	getTargetState_topic = ""
+	getCurrentState_topic = ""
 	ip = ""
 	port = 0
 	while True:
-		decide_open(listener_topic, ip, port)
-		irsensor.get_status(publisher_topic, ip , port)
+		decide_open(setTargetState_topic, ip, port)
+		status = irsensor.get_status(getCurrentState_topic, ip , port)
+		if status == mqtt.setTargetListener(listener_topic, ip, port):
+			mqtt.getTargetPublisher()
 		time.sleep(1)
 	GPIO.cleanup()

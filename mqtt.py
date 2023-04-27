@@ -37,27 +37,11 @@ def setTargetListener(topic, ip="127.0.0.1", port=1883):
         return 0
 
 
-    
-
-
 def getTargetPublisher(topic, message, ip="127.0.0.1", port=1883):
     """
     Publishes a message (string) to an mqtt topic (string) at a given ip (string)
     and given port (integer)
     """
-    # handles the connection to mqtt
-    # def on_connect(client, userdata, flags, rc):
-    #     if rc == 0:
-    #         print("Connected to MQTT broker")
-    #     else:
-    #         print("Failed to connect, return code %d\n", rc)
-    #     # set client id
-    #     broker = "broker.emqx.io"
-    #     client = mqtt.Client("target_publisher")
-    #     client.on_connect = on_connect
-    #     client.connect(broker, port=1883)
-    #     return client
-    
     # publishing to the given topic
     client = mqtt.Client() # setup client
     keepalive = 60
@@ -73,7 +57,7 @@ def getTargetPublisher(topic, message, ip="127.0.0.1", port=1883):
 
 if __name__ == "__main__":
     while True:
-        target = setTargetListener("homebridge/settarget")
+        target = setTargetListener("garage/settarget", "192.168.1.55", 1884)
         print("target", target)
         if target:
             print("*******************************")
