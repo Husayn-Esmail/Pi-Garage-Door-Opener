@@ -63,7 +63,6 @@ if __name__ == '__main__':
 			continue
 		except KeyboardInterrupt:
 			print("KeyboardInterrupt")
-			GPIO.cleanup()
 			exit()
 		else:
 			continue
