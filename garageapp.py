@@ -32,25 +32,30 @@ def decide_open(topic, ip, port):
 
 # runs the mqtt server
 if __name__ == '__main__':
-	# set GPIO pin mode
-	GPIO.setmode(GPIO.BCM)
-
-	# initialize pins
-	GPIO.setup(20, GPIO.OUT)
-	GPIO.setup(16, GPIO.IN)
-	GPIO.setup(21, GPIO.OUT)
-
-	# start the sensor
-	GPIO.output(20, GPIO.HIGH)
 	setTargetState_topic = ""
 	getTargetState_topic = ""
 	getCurrentState_topic = ""
 	ip = ""
 	port = 0
+	# unfortunately the infinite loop is necessary to poll the sensor.
 	while True:
+		# set GPIO pin mode
+		GPIO.setmode(GPIO.BCM)
+
+		# initialize pins
+		GPIO.setup(20, GPIO.OUT)
+		GPIO.setup(16, GPIO.IN)
+		GPIO.setup(21, GPIO.OUT)
+
+		# start the sensor
+		GPIO.output(20, GPIO.HIGH)
+
+		# listens for requested changes
 		decide_open(setTargetState_topic, ip, port)
+
+		# reflects the real world state
 		status = irsensor.get_status(getCurrentState_topic, ip , port)
-		if status == mqtt.setTargetListener(listener_topic, ip, port):
-			mqtt.getTargetPublisher()
+		# if status == mqtt.setTargetListener(listener_topic, ip, port):
+		# 	mqtt.getTargetPublisher()
 		time.sleep(1)
-	GPIO.cleanup()
+		GPIO.cleanup()
