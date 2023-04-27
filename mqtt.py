@@ -44,9 +44,8 @@ def getTargetPublisher(topic, message, ip="127.0.0.1", port=1883):
     """
     # publishing to the given topic
     client = mqtt.Client() # setup client
-    keepalive = 60
     # connect to publisher
-    client.connect(ip, port, keepalive)
+    client.connect(ip, port)
     result = client.publish(topic, message)
     status = result[0]
     if status == 0:

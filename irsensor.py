@@ -33,10 +33,10 @@ def get_status(topic, ip, port):
 	state = GPIO.input(16)
 	# garage is closed
 	if not state:
-		mqtt.getTargetPublisher(topic, "C", ip, port)
+		mqtt.getTargetPublisher(topic=topic, message="C", ip=ip, port=port)
 		return False
 	# garage is open
-	mqtt.getTargetPublisher(topic, "O", ip , port)
+	mqtt.getTargetPublisher(topic=topic, message="O", ip=ip , port=port)
 	return True
 
 
