@@ -15,6 +15,8 @@ def trigger_relay():
 	# sets the relay to flip for one second
 	GPIO.output(21, 1)
 	time.sleep(1)
+	GPIO.output(21, 0)
+
 
 # decides whether to open the garage door or not
 def decide_open(topic, ip, port):
@@ -36,6 +38,7 @@ if __name__ == '__main__':
 	# initialize pins
 	GPIO.setup(20, GPIO.OUT)
 	GPIO.setup(16, GPIO.IN)
+	GPIO.setup(21, GPIO.OUT)
 
 	# start the sensor
 	GPIO.output(20, GPIO.HIGH)
