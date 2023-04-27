@@ -57,7 +57,7 @@ def getTargetPublisher(topic, message, ip="127.0.0.1", port=1883):
 
 if __name__ == "__main__":
     while True:
-        target = setTargetListener("garage/settarget", "192.168.1.55", 1884)
+        target = setTargetListener("", "", 1883)
         print("target", target)
         if target:
             print("*******************************")
