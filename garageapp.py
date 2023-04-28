@@ -61,6 +61,10 @@ if __name__ == '__main__':
 			print("***** ERROR OCCURED: ConnectionRefusedError *****")
 			print(err)
 			continue
+		except err as e:
+			print("***** ERROR OCCURED: likely a socket.connect error *****")
+			print(e)
+			continue
 		except KeyboardInterrupt:
 			print("KeyboardInterrupt")
 			exit()
