@@ -62,7 +62,7 @@ if __name__ == '__main__':
 			print("***** ERROR OCCURED: ConnectionRefusedError *****")
 			print(err)
 			continue
-		except TimeoutError as err:
+		except socket.timeout as err:
 			print("***** ERROR OCCURED: likely a socket.timeout error *****")
 			print(err)
 			continue
