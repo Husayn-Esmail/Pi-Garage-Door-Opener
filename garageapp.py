@@ -8,6 +8,7 @@ import time
 import RPi.GPIO as GPIO
 import irsensor
 import mqtt
+import socket
 
 
 # NEW MOSQUITTO CODE
@@ -61,9 +62,9 @@ if __name__ == '__main__':
 			print("***** ERROR OCCURED: ConnectionRefusedError *****")
 			print(err)
 			continue
-		except err as e:
-			print("***** ERROR OCCURED: likely a socket.connect error *****")
-			print(e)
+		except TimeoutError as err:
+			print("***** ERROR OCCURED: likely a socket.timeout error *****")
+			print(err)
 			continue
 		except KeyboardInterrupt:
 			print("KeyboardInterrupt")
