@@ -75,15 +75,33 @@ if __name__ == '__main__':
 			status = irsensor.get_status(getCurrentState_topic, ip , port)
 			time.sleep(1)
 		except ConnectionRefusedError as err:
-			print("***** ERROR OCCURED: ConnectionRefusedError *****")
+			print("""***** 
+			
+			
+			ERROR OCCURED: ConnectionRefusedError 
+			
+			
+			*****""")
 			print(err)
 			continue
 		except socket.timeout as err:
-			print("***** ERROR OCCURED: likely a socket.timeout error *****")
+			print("""*****
+			 
+			
+			ERROR OCCURED: likely a socket.timeout error 
+			
+			
+			*****""")
 			print(err)
 			continue
 		except KeyboardInterrupt:
-			print("KeyboardInterrupt")
+			print("""
+			****
+			
+			KeyboardInterrupt
+			
+			****
+			""")
 			exit()
 		else:
 			continue
