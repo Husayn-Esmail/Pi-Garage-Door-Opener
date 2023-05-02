@@ -9,6 +9,7 @@ import RPi.GPIO as GPIO
 import irsensor
 import mqtt
 import socket
+import sys
 
 
 # NEW MOSQUITTO CODE
@@ -31,14 +32,29 @@ def decide_open(topic, ip, port):
 	if target:
 		trigger_relay()
 
+
+def read_configuration(filename):
+	config = {"setTargetState_topic": "", "getTargetState_topic": "", "getCurrentState_topic": "", "ip": "", "port": 0}
+	with open (filename, 'r') as f:
+		for key in config.keys():
+			config[key] = f.readline().rstrip('\n')
+			if key == 'port':
+				config[key] = int(config[key])
+	return config
+
+
 # runs the mqtt server
 if __name__ == '__main__':
-	setTargetState_topic = ""
-	getTargetState_topic = ""
-	getCurrentState_topic = ""
-	ip = ""
-	port = 0
-	# unfortunately the infinite loop is necessary to poll the sensor.
+	if len(sys.argv) < 2: 
+		print("missing argument: filename")
+		exit()
+	filename = sys.argv[1]
+	config = read_configuration(filename)
+	setTargetState_topic, getTargetState_topic, \
+		getCurrentState_topic, ip, port = config["setTargetState_topic"], config["getTargetState_topic"], \
+		config["getCurrentState_topic"], config["ip"], config["port"]
+
+	# # unfortunately the infinite loop is necessary to poll the sensor.
 	while True:
 		try:
 			# set GPIO pin mode

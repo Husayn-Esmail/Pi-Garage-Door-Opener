@@ -16,7 +16,7 @@ import mqtt
 print("irsensor being called") # for log/debug purposes
 
 def get_status(topic, ip, port):
-	# Init GPIOs
+	#### Init GPIOs ####
 	# set GPIO pin mode
 	GPIO.setmode(GPIO.BCM)
 
@@ -43,9 +43,13 @@ def get_status(topic, ip, port):
 if __name__ == '__main__':
 	continueProgram = True
 	while continueProgram:
-		print(get_status())
-		time.sleep(1)
+		try:
+			print(get_status())
+			time.sleep(1)
+		except KeyboardInterrupt:
+			# clean up pin
+			GPIO.cleanup()		
+			exit()
 
-# clean up pin
-GPIO.cleanup()
+
 
