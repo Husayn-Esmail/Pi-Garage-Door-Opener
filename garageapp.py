@@ -94,6 +94,17 @@ if __name__ == '__main__':
 			*****""")
 			print(err)
 			continue
+		except OSError as err:
+			print("""
+			
+			
+			OS ERROR OCCURRED
+
+			
+
+			""")
+			print(err)
+			continue
 		except KeyboardInterrupt:
 			print("""
 			****
