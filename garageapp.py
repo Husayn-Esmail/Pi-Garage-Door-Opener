@@ -54,6 +54,8 @@ def read_configuration(filename):
 	config = {
 		"method" : "",
 		"stateHardware" : False,
+		"auth_user": "",
+		"auth_password" : "",
 		"setTargetStateTopic": "", 
 		"getTargetStateTopic": "",
 		"getCurrentStateTopic": "", 
