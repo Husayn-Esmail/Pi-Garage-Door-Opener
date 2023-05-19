@@ -38,22 +38,27 @@ def read_sensor(sensor_pin, state_pin, reverse=False):
 		return "C"
 	return "O"
 
+def mqttStateMode(config):
+	'''
+	if mqtt is enabled and state is enabled,
+	use this function
+	'''
+	auth_user = config["auth_user"]
+	auth_password = config["auth_password"]
+	setTargetStateTopic = config["setTargetStateTopic"]
+	getTargetState_topic = config["getTargetStateTopic"]
+	getCurrentState_topic = config["getCurrentStateTopic"]
+	pass
+
 def main():
 	# configuration
 	filename = process_cmdline_arguments()
 	config = read_configuration(filename)
 	method = config["method"]
 	stateHardware = config["stateHardware"]
-	auth_user = config["auth_user"]
-	auth_password = config["auth_password"]
-	setTargetStateTopic = config["setTargetStateTopic"]
-	getTargetState_topic = config["getTargetStateTopic"]
-	getCurrentState_topic = config["getCurrentStateTopic"]
 	ip = config["ip"]
 	port = config["port"]
 	relayPin, sensorPin, statePin = config["relayPin"], config["sensorPin"], config["statePin"]
-
-
 	DOORSTATE = "C" # default state of closed
 
 	# Init GPIO
