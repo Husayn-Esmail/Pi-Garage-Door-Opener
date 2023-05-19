@@ -14,11 +14,23 @@ import sys
 
 # NEW MOSQUITTO CODE
 def trigger_relay():
-	# sets the relay to flip for one second
+	'''
+	Flips relay on for 1 second and then off again to trigger garagedoor motor.
+	'''
 	GPIO.output(21, 1)
 	time.sleep(1)
 	GPIO.output(21, 0)
 
+def read_sensor(reverse=False):
+	'''
+	Reads value of a door sensor and returns the interpretted value
+	in respect to the garagedoor state. Has an option to reverse based
+	on the sensor's reading process.
+	'''
+	pass
+
+def main():
+	DOORSTATE = "C" # default state of closed
 
 # decides whether to open the garage door or not
 def decide_open(topic, ip, port):
@@ -34,12 +46,35 @@ def decide_open(topic, ip, port):
 
 
 def read_configuration(filename):
-	config = {"setTargetState_topic": "", "getTargetState_topic": "", "getCurrentState_topic": "", "ip": "", "port": 0}
+	"""
+	Processes configuration file using a passed in filename (string)
+	and returns a dictionary with each attribute as the key and the
+	setting as the value.
+	"""
+	config = {
+		"method" : "",
+		"stateHardware" : False,
+		"setTargetStateTopic": "", 
+		"getTargetStateTopic": "",
+		"getCurrentStateTopic": "", 
+		"ip": "", 
+		"port": 0}
 	with open (filename, 'r') as f:
 		for key in config.keys():
 			config[key] = f.readline().rstrip('\n')
+			# convert port to int
 			if key == 'port':
 				config[key] = int(config[key])
+			# convert stateHardware to boolean
+			if key == "stateHardware":
+				if config[key] == "False":
+					config[key] = False
+				else:
+					config[key] = True
+			# ensure that whatever method entered is consistent
+			if key == "method":
+				# for consistency
+				config[key] = config[key].lower()	
 	return config
 
 
