@@ -21,20 +21,44 @@ def trigger_relay():
 	time.sleep(1)
 	GPIO.output(21, 0)
 
-def read_sensor(reverse=False):
+def read_sensor(sensor_pin, state_pin, reverse=False):
 	'''
 	Reads value of a door sensor and returns the interpretted value
 	in respect to the garagedoor state. Has an option to reverse based
 	on the sensor's reading process.
 	'''
-	pass
+	# start the sensor
+	GPIO.output(sensor_pin, GPIO.HIGH)
+	state = GPIO.input(state_pin)
+	# garage is closed
+	if reverse:
+		state = not state
+	
+	if not state:
+		return "C"
+	return "O"
 
 def main():
 	# configuration
 	filename = process_cmdline_arguments()
 	config = read_configuration(filename)
+	method = config["method"]
+	stateHardware = config["stateHardware"]
+	auth_user = config["auth_user"]
+	auth_password = config["auth_password"]
+	setTargetStateTopic = config["setTargetStateTopic"]
+	getTargetState_topic = config["getTargetStateTopic"]
+	getCurrentState_topic = config["getCurrentStateTopic"]
+	ip = config["ip"]
+	port = config["port"]
+	relayPin, sensorPin, statePin = config["relayPin"], config["sensorPin"], config["statePin"]
+
+
 	DOORSTATE = "C" # default state of closed
-	read_sensor()
+
+	# Init GPIO
+
+	DOORSTATE = read_sensor()
 
 
 # decides whether to open the garage door or not
