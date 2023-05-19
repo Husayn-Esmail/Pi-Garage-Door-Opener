@@ -57,8 +57,16 @@ def main():
 	DOORSTATE = "C" # default state of closed
 
 	# Init GPIO
+	GPIO.setmode(GPIO.BCM)
+	# setup
+	GPIO.setup(relayPin, GPIO.OUT)
+	GPIO.setup(sensorPin, GPIO.OUT)
+	GPIO.setup(statePin, GPIO.IN)
+	# start sensor
+	GPIO.output(sensorPin, GPIO.HIGH)
 
-	DOORSTATE = read_sensor()
+	# GLOBAL STATE VAR
+	DOORSTATE = read_sensor(sensorPin, statePin)
 
 
 # decides whether to open the garage door or not
