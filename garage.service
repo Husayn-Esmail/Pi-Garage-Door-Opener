@@ -1,0 +1,11 @@
+[Unit]
+Description=Launches the garage door program
+
+[Service]
+User=pi
+WorkingDirectory=/home/$user/
+ExecStart=sh /home/$user/Pi-Garage-Door/start.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
