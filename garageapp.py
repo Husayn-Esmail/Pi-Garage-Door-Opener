@@ -30,7 +30,12 @@ def read_sensor(reverse=False):
 	pass
 
 def main():
+	# configuration
+	filename = process_cmdline_arguments()
+	config = read_configuration(filename)
 	DOORSTATE = "C" # default state of closed
+	read_sensor()
+
 
 # decides whether to open the garage door or not
 def decide_open(topic, ip, port):
@@ -60,12 +65,16 @@ def read_configuration(filename):
 		"getTargetStateTopic": "",
 		"getCurrentStateTopic": "", 
 		"ip": "", 
-		"port": 0}
+		"port": 0,
+		"relayPin": 0,
+		"sensorPin": 0,
+		"statePin": 0
+		}
 	with open (filename, 'r') as f:
 		for key in config.keys():
 			config[key] = f.readline().rstrip('\n')
-			# convert port to int
-			if key == 'port':
+			# convert port and pins to int
+			if key == 'port' or key == "relayPin" or key == "sensorPin" or key == "statePin":
 				config[key] = int(config[key])
 			# convert stateHardware to boolean
 			if key == "stateHardware":
@@ -79,13 +88,20 @@ def read_configuration(filename):
 				config[key] = config[key].lower()	
 	return config
 
-
-# runs the mqtt server
-if __name__ == '__main__':
+def process_cmdline_arguments():
+	'''
+	Manages the reading of commmand line arguments and validation.
+	Returns a filename for configuration.
+	'''
 	if len(sys.argv) < 2: 
 		print("missing argument: filename")
 		exit()
 	filename = sys.argv[1]
+	return filename
+
+# runs the mqtt server
+if __name__ == '__main__':
+	filename = process_cmdline_arguments()
 	config = read_configuration(filename)
 	setTargetState_topic, getTargetState_topic, \
 		getCurrentState_topic, ip, port = config["setTargetState_topic"], config["getTargetState_topic"], \
