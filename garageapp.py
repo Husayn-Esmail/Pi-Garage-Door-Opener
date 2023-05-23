@@ -10,16 +10,38 @@ import irsensor
 import mqtt
 import socket
 import sys
-
+import threading
 
 # NEW MOSQUITTO CODE
-def trigger_relay():
+def trigger_relay(relay_pin):
 	'''
 	Flips relay on for 1 second and then off again to trigger garagedoor motor.
 	'''
-	GPIO.output(21, 1)
+	GPIO.output(relay_pin, 1)
 	time.sleep(1)
-	GPIO.output(21, 0)
+	GPIO.output(relay_pin, 0)
+
+def mqttsetup(ip, subtopic):
+	client = mqtt.Client()
+	client.connect(ip, port, 60)
+	client.subscribe(subtopic)
+
+def mqtt_thread(client):
+	client.loop_forever()
+
+def thread_shred(client):
+	threading.Thread(target=mqtt_thread, args=(client)).start()
+
+def publish_current_state(client, topic, message):
+	client.publish(topic, message)
+
+def onTargetState(client, userdata, message, relayPin):
+	# extract target from message payload
+	target = message.payload.decode('utf-8')
+	# if the message is to do something, do it.
+	if target == "C" or target == "O":
+		trigger_relay(relayPin)
+
 
 def read_sensor(sensor_pin, state_pin, reverse=False):
 	'''
@@ -38,7 +60,7 @@ def read_sensor(sensor_pin, state_pin, reverse=False):
 		return "C"
 	return "O"
 
-def mqttStateMode(config):
+def mqttStateMode(config, DOORSTATE):
 	'''
 	if mqtt is enabled and state is enabled,
 	use this function
@@ -48,7 +70,11 @@ def mqttStateMode(config):
 	setTargetStateTopic = config["setTargetStateTopic"]
 	getTargetState_topic = config["getTargetStateTopic"]
 	getCurrentState_topic = config["getCurrentStateTopic"]
-	pass
+	readout = read_sensor(config["sensorpin"], config["state_pin"])
+	if readout != DOORSTATE:
+		DOORSTATE = readout
+		publish_current_state(DOORSTATE)
+
 
 def main():
 	# configuration
@@ -71,7 +97,7 @@ def main():
 	GPIO.output(sensorPin, GPIO.HIGH)
 
 	# GLOBAL STATE VAR
-	DOORSTATE = read_sensor(sensorPin, statePin)
+	readout = read_sensor(sensorPin, statePin)
 
 
 # decides whether to open the garage door or not
@@ -136,75 +162,75 @@ def process_cmdline_arguments():
 	filename = sys.argv[1]
 	return filename
 
-# runs the mqtt server
-if __name__ == '__main__':
-	filename = process_cmdline_arguments()
-	config = read_configuration(filename)
-	setTargetState_topic, getTargetState_topic, \
-		getCurrentState_topic, ip, port = config["setTargetState_topic"], config["getTargetState_topic"], \
-		config["getCurrentState_topic"], config["ip"], config["port"]
+# # runs the mqtt server
+# if __name__ == '__main__':
+# 	filename = process_cmdline_arguments()
+# 	config = read_configuration(filename)
+# 	setTargetState_topic, getTargetState_topic, \
+# 		getCurrentState_topic, ip, port = config["setTargetState_topic"], config["getTargetState_topic"], \
+# 		config["getCurrentState_topic"], config["ip"], config["port"]
 
-	# # unfortunately the infinite loop is necessary to poll the sensor.
-	while True:
-		try:
-			# set GPIO pin mode
-			GPIO.setmode(GPIO.BCM)
+# 	# # unfortunately the infinite loop is necessary to poll the sensor.
+# 	while True:
+# 		try:
+# 			# set GPIO pin mode
+# 			GPIO.setmode(GPIO.BCM)
 
-			# initialize pins
-			GPIO.setup(20, GPIO.OUT)
-			GPIO.setup(16, GPIO.IN)
-			GPIO.setup(21, GPIO.OUT)
+# 			# initialize pins
+# 			GPIO.setup(20, GPIO.OUT)
+# 			GPIO.setup(16, GPIO.IN)
+# 			GPIO.setup(21, GPIO.OUT)
 
-			# start the sensor
-			GPIO.output(20, GPIO.HIGH)
+# 			# start the sensor
+# 			GPIO.output(20, GPIO.HIGH)
 
-			# listens for requested changes
-			decide_open(setTargetState_topic, ip, port)
+# 			# listens for requested changes
+# 			decide_open(setTargetState_topic, ip, port)
 
-			# reflects the real world state
-			status = irsensor.get_status(getCurrentState_topic, ip , port)
-			time.sleep(1)
-		except ConnectionRefusedError as err:
-			print("""***** 
+# 			# reflects the real world state
+# 			status = irsensor.get_status(getCurrentState_topic, ip , port)
+# 			time.sleep(1)
+# 		except ConnectionRefusedError as err:
+# 			print("""***** 
 			
 			
-			ERROR OCCURED: ConnectionRefusedError 
+# 			ERROR OCCURED: ConnectionRefusedError 
 			
 			
-			*****""")
-			print(err)
-			continue
-		except socket.timeout as err:
-			print("""*****
+# 			*****""")
+# 			print(err)
+# 			continue
+# 		except socket.timeout as err:
+# 			print("""*****
 			 
 			
-			ERROR OCCURED: likely a socket.timeout error 
+# 			ERROR OCCURED: likely a socket.timeout error 
 			
 			
-			*****""")
-			print(err)
-			continue
-		except OSError as err:
-			print("""
+# 			*****""")
+# 			print(err)
+# 			continue
+# 		except OSError as err:
+# 			print("""
 			
 			
-			OS ERROR OCCURRED
+# 			OS ERROR OCCURRED
 
 			
 
-			""")
-			print(err)
-			continue
-		except KeyboardInterrupt:
-			print("""
-			****
+# 			""")
+# 			print(err)
+# 			continue
+# 		except KeyboardInterrupt:
+# 			print("""
+# 			****
 			
-			KeyboardInterrupt
+# 			KeyboardInterrupt
 			
-			****
-			""")
-			exit()
-		else:
-			continue
-		finally:
-			GPIO.cleanup()
+# 			****
+# 			""")
+# 			exit()
+# 		else:
+# 			continue
+# 		finally:
+# 			GPIO.cleanup()
