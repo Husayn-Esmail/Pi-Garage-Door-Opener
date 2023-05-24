@@ -17,9 +17,12 @@ def trigger_relay(relay_pin):
 	'''
 	Flips relay on for 1 second and then off again to trigger garagedoor motor.
 	'''
+	GPIO.setmode(GPIO.BCM)
+	GPIO.setup(relay_pin, GPIO.OUT)
 	GPIO.output(relay_pin, 1)
 	time.sleep(1)
 	GPIO.output(relay_pin, 0)
+	GPIO.cleanup()
 
 def mqttsetup(ip, subtopic):
 	client = mqtt.Client()
