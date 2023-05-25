@@ -24,7 +24,7 @@ def trigger_relay(relay_pin):
 	GPIO.output(relay_pin, 0)
 	GPIO.cleanup()
 
-def mqttsetup(ip, subtopic):
+def mqttsetup(ip, port, subtopic):
 	client = mqtt.Client()
 	client.connect(ip, port, 60)
 	client.subscribe(subtopic)

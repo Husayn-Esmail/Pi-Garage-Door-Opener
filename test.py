@@ -1,6 +1,7 @@
 import garageapp
 import time
 import paho.mqtt.client as mqtt
+import RPi.GPIO as GPIO
 
 
 filename = garageapp.process_cmdline_arguments()
@@ -25,20 +26,37 @@ def on_connect(client, userdata, flags, rc):
     print("connected with result code " + str(rc))
     client.subscribe(setTargetStateTopic)
 
-while True: 
+def temporary_sensor_readings():
+    """
+    Used only for my testing environment and will be substituted with the avoid
+    sensor code as the necessary logic for the sensor is already tried and tested
+    but the implementation for how to use the data once it's been received has not been.
+    Basically I know that reading the avoid sensor works. but what I do with the data afterwards
+    is not tested yet.
+    """
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(sensorPin, GPIO.IN)
 
+    # read GPIO
+    state = GPIO.input(sensorPin)
+    GPIO.cleanup()
+
+    return state
+
+
+# while True:
 #    c = mqttsetup(ip, setTargetStateTopic)
-    client = mqtt.Client()
+client = mqtt.Client()
 
-    client.username_pw_set(username=auth_user, password=auth_password)
+client.username_pw_set(username=auth_user, password=auth_password)
 
-    # chatgpt generated`
-    client.on_connect = on_connect
-    client.on_message = on_message
+# chatgpt generated`
+# client.on_connect = on_connect # I don't think this is necessary
+client.on_message = on_message # this would be because of the required function call
 
-    client.connect(ip, port, 60)
-    client.subscribe(setTargetStateTopic)
-    garageapp.thread_shred(client)
-    time.sleep(1)
+client.connect(ip, port, 60)
+client.subscribe(setTargetStateTopic)
+garageapp.thread_shred(client) # I believe this is enough to keep the program going.
+time.sleep(1)
     
     
