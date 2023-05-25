@@ -19,7 +19,7 @@ getCurrentState_topic = config["getCurrentStateTopic"]
 
 def on_message(client, userdata, message):
     # call custom callback function
-    onTargetState(client, userdata, message, relayPin)
+    garageapp.onTargetState(client, userdata, message, relayPin)
 
 def on_connect(client, userdata, flags, rc):
     print("connected with result code " + str(rc))
