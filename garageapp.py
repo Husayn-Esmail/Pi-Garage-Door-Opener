@@ -33,7 +33,7 @@ def mqtt_thread(client):
 	client.loop_forever()
 
 def thread_shred(client):
-	threading.Thread(target=mqtt_thread, args=(client)).start()
+	threading.Thread(target=mqtt_thread, args=[client]).start()
 
 def publish_current_state(client, topic, message):
 	client.publish(topic, message)
@@ -44,7 +44,6 @@ def onTargetState(client, userdata, message, relayPin):
 	# if the message is to do something, do it.
 	if target == "C" or target == "O":
 		trigger_relay(relayPin)
-
 
 def read_sensor(sensor_pin, state_pin, reverse=False):
 	'''
