@@ -25,7 +25,8 @@ getCurrentState_topic = config["getCurrentStateTopic"]
 
 def on_message(client, userdata, message):
     # call custom callback function
-    garageapp.onTargetState(client, userdata, message, relayPin)
+    return message
+    # garageapp.onTargetState(client, userdata, message, relayPin)
 
 def on_connect(client, userdata, flags, rc):
     print("connected with result code " + str(rc))
@@ -67,7 +68,7 @@ def test_temporary_sensor():
         print("LDR: ", temporary_sensor_readings())
         time.sleep(3)
 
-def test_mqtt_client():
+def test_thread_shred():
     '''
     Again not an automated test as this tests the ability for the program to listen to
     a given mqtt topic with authentication and everything and see if calling from
@@ -82,9 +83,18 @@ def test_mqtt_client():
 
     client.connect("localhost", 1885, 60)
     client.subscribe(setTargetStateTopic)
-    garageapp.thread_shred(client) # I believe this is enough to keep the program going.
+    # loops the program forever
+    garageapp.thread_shred(client)
     time.sleep(1)
-        
+    
+
+def test_mqtt_client():
+    '''
+    The point of this is to test if the mqttsetup function works
+    '''
+    c = garageapp.mqttsetup(ip, port, setTargetStateTopic, relayPin, [auth_user, auth_password])
+    garageapp.thread_shred(c)
+
 def test_relay():
     '''
     This is something that must be tested manually so it is not automated in any way.
@@ -96,4 +106,4 @@ def test_relay():
         input("Press enter to do it again")
 
 if __name__ == '__main__':
-    test_temporary_sensor()
+    test_mqtt_client()

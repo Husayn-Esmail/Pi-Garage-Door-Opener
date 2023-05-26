@@ -7,7 +7,7 @@ Uses mqtt to open and close the garage as well as get it's current state.
 import time
 import RPi.GPIO as GPIO
 import irsensor
-import mqtt
+import paho.mqtt.client as mqtt
 import socket
 import sys
 import threading
@@ -24,10 +24,31 @@ def trigger_relay(relay_pin):
 	GPIO.output(relay_pin, 0)
 	GPIO.cleanup()
 
-def mqttsetup(ip, port, subtopic):
-	client = mqtt.Client()
+# def on_message(client, userdata, message):
+#     # call custom callback function
+#     onTargetState(client, userdata, message, relayPin)
+
+def on_message(client, userdata, message):
+	'''
+	This is a callback function that occurs when a message is received.
+	It calls a function which decies what to do 
+	'''
+	onTargetState(client, userdata, message)
+
+
+def mqttsetup(ip, port, subtopic, relaypin, auth: list):
+	'''
+	The intent of this function is to setup a subscription to an mqtt topic.
+	The order of auth array is username [0], password [1]
+	relaypin is just the pin needed to trigger the relay. this may not be needed
+	depending on how I decide to deal with the rest of the code.
+	'''
+	client = mqtt.Client(userdata={"rpin": relaypin})
+	client.username_pw_set(username=auth[0], password=auth[1])
+	client.on_message = onTargetState
 	client.connect(ip, port, 60)
 	client.subscribe(subtopic)
+	return client
 
 def mqtt_thread(client):
 	client.loop_forever()
@@ -38,12 +59,12 @@ def thread_shred(client):
 def publish_current_state(client, topic, message):
 	client.publish(topic, message)
 
-def onTargetState(client, userdata, message, relayPin):
+def onTargetState(client, userdata, message):
 	# extract target from message payload
 	target = message.payload.decode('utf-8')
 	# if the message is to do something, do it.
 	if target == "C" or target == "O":
-		trigger_relay(relayPin)
+		trigger_relay(userdata["rpin"])
 
 def read_sensor(sensor_pin, state_pin, reverse=False):
 	'''
