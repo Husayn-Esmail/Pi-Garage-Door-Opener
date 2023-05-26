@@ -44,20 +44,19 @@ def temporary_sensor_readings():
     return state
 
 
-while True:
-    print("LDR: ", temporary_sensor_readings())
-    time.sleep(3)
+# while True:
+#     print("LDR: ", temporary_sensor_readings())
+#     time.sleep(3)
 #    c = mqttsetup(ip, setTargetStateTopic)
-# client = mqtt.Client()
+client = mqtt.Client()
+# while True:
+client.username_pw_set(username=auth_user, password=auth_password)
 
-# client.username_pw_set(username=auth_user, password=auth_password)
+# chatgpt generated
+client.on_message = on_message # this would be because of the required function call
 
-# # chatgpt generated`
-# # client.on_connect = on_connect # I don't think this is necessary
-# client.on_message = on_message # this would be because of the required function call
-
-# client.connect(ip, port, 60)
-# client.subscribe(setTargetStateTopic)
-# garageapp.thread_shred(client) # I believe this is enough to keep the program going.
-# time.sleep(1)
+client.connect("localhost", 1885, 60)
+client.subscribe(setTargetStateTopic)
+garageapp.thread_shred(client) # I believe this is enough to keep the program going.
+time.sleep(1)
         
