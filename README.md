@@ -3,6 +3,9 @@
 Now uses mosquitto to transmit (not secure right now though)
 need to configure the garageapp.py before using.
 
+Please do not leave the user and password as the default admin admin combo.
+
+
 ## Configuration format
 
 the following should be in your configuration file in this order.
