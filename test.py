@@ -20,8 +20,8 @@ relayPin, sensorPin, statePin = config["relayPin"], config["sensorPin"], config[
 auth_user = config["auth_user"]
 auth_password = config["auth_password"]
 setTargetStateTopic = config["setTargetStateTopic"]
-getTargetState_topic = config["getTargetStateTopic"]
-getCurrentState_topic = config["getCurrentStateTopic"]
+getTargetStateTopic = config["getTargetStateTopic"]
+getCurrentStateTopic = config["getCurrentStateTopic"]
 
 def on_message(client, userdata, message):
     # call custom callback function
@@ -45,7 +45,6 @@ def temporary_sensor_readings(reverse=False):
 
     # read GPIO
     state = GPIO.input(sensorPin)
-    GPIO.cleanup()
     if reverse:
         state = not state
     if not state:
@@ -105,5 +104,22 @@ def test_relay():
         garageapp.trigger_relay(relayPin)
         input("Press enter to do it again")
 
+def test_publish_state():
+    STATE_VAR = "C"
+    # setup the mqtt
+    client = garageapp.mqttsetup(ip, port, setTargetStateTopic, relayPin, [auth_user, auth_password])
+    # start infinite loop
+    garageapp.thread_shred(client)
+    # logic for publishing state
+    while True:
+        sensor_info = temporary_sensor_readings()
+        # if the reading is different than the current, then call publish.
+        if sensor_info != STATE_VAR:
+            STATE_VAR = sensor_info
+            garageapp.publish_current_state(client, getCurrentStateTopic, sensor_info)
+        # Else keep polling
+        time.sleep(.25) # sleep for .25 seconds to give the cpu time to do other things.
+
+
 if __name__ == '__main__':
-    test_mqtt_client()
+    test_publish_state()
