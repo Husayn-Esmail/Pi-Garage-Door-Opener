@@ -24,18 +24,6 @@ def trigger_relay(relay_pin):
 	GPIO.output(relay_pin, 0)
 	GPIO.cleanup()
 
-# def on_message(client, userdata, message):
-#     # call custom callback function
-#     onTargetState(client, userdata, message, relayPin)
-
-def on_message(client, userdata, message):
-	'''
-	This is a callback function that occurs when a message is received.
-	It calls a function which decies what to do 
-	'''
-	onTargetState(client, userdata, message)
-
-
 def mqttsetup(ip, port, subtopic, relaypin, auth: list):
 	'''
 	The intent of this function is to setup a subscription to an mqtt topic.
@@ -43,6 +31,7 @@ def mqttsetup(ip, port, subtopic, relaypin, auth: list):
 	relaypin is just the pin needed to trigger the relay. this may not be needed
 	depending on how I decide to deal with the rest of the code.
 	'''
+	# pass in the relayPin to the client so it can pass it on in the callback function
 	client = mqtt.Client(userdata={"rpin": relaypin})
 	client.username_pw_set(username=auth[0], password=auth[1])
 	client.on_message = onTargetState
