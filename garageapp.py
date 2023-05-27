@@ -121,6 +121,7 @@ def mqttStateMode(config):
 	auth_array = [auth_user, auth_pass]
 	# setup mqtt
 	client = mqttsetup(ip, port, setTargetStateTopic, relayPin, auth_array)
+	publish_current_state(client, getTargetStateTopic, DOORSTATE)
 	# start infinite loop
 	thread_shred(client)
 
