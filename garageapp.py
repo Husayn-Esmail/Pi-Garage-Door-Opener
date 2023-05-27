@@ -6,13 +6,11 @@ Uses mqtt to open and close the garage as well as get it's current state.
 # import modules
 import time
 import RPi.GPIO as GPIO
-import irsensor
 import paho.mqtt.client as mqtt
-import socket
+# import socket
 import sys
 import threading
 
-# NEW MOSQUITTO CODE
 def trigger_relay(relay_pin):
 	'''
 	Flips relay on for 1 second and then off again to trigger garagedoor motor.
