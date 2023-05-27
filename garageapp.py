@@ -7,7 +7,6 @@ Uses mqtt to open and close the garage as well as get it's current state.
 import time
 import RPi.GPIO as GPIO
 import paho.mqtt.client as mqtt
-# import socket
 import sys
 import threading
 
@@ -38,15 +37,27 @@ def mqttsetup(ip, port, subtopic, relaypin, auth: list):
 	return client
 
 def mqtt_thread(client):
+	'''
+	Starts an infinite loop to keep mqtt alive
+	'''
 	client.loop_forever()
 
 def thread_shred(client):
+	'''
+	starts mqtt process in another thread so the program can do other things
+	'''
 	threading.Thread(target=mqtt_thread, args=[client]).start()
 
 def publish_current_state(client, topic, message):
+	'''
+	used to publish a given state to a topic. this might be redundant
+	'''
 	client.publish(topic, message)
 
 def onTargetState(client, userdata, message):
+	'''
+	callback function for mqtt's on_message
+	'''
 	# extract target from message payload
 	target = message.payload.decode('utf-8')
 	# if the message is to do something, do it.
@@ -59,8 +70,14 @@ def read_sensor(sensor_pin, state_pin, reverse=False):
 	in respect to the garagedoor state. Has an option to reverse based
 	on the sensor's reading process.
 	'''
+	# Init GPIO
+	GPIO.setmode(GPIO.BCM)
+	# setup
+	GPIO.setup(sensor_pin, GPIO.OUT)
+	GPIO.setup(state_pin, GPIO.IN)
 	# start the sensor
 	GPIO.output(sensor_pin, GPIO.HIGH)
+	# read sensor
 	state = GPIO.input(state_pin)
 	# garage is closed
 	if reverse:
@@ -70,45 +87,53 @@ def read_sensor(sensor_pin, state_pin, reverse=False):
 		return "C"
 	return "O"
 
-def mqttStateMode(config, DOORSTATE):
+def mqttStateMode(config):
 	'''
 	if mqtt is enabled and state is enabled,
 	use this function
 	'''
-	auth_user = config["auth_user"]
-	auth_password = config["auth_password"]
-	setTargetStateTopic = config["setTargetStateTopic"]
-	getTargetState_topic = config["getTargetStateTopic"]
-	getCurrentState_topic = config["getCurrentStateTopic"]
-	readout = read_sensor(config["sensorpin"], config["state_pin"])
-	if readout != DOORSTATE:
-		DOORSTATE = readout
-		publish_current_state(DOORSTATE)
-
-
-def main():
-	# configuration
-	filename = process_cmdline_arguments()
-	config = read_configuration(filename)
+	# auth_user = config["auth_user"]
+	# auth_password = config["auth_password"]
+	# setTargetStateTopic = config["setTargetStateTopic"]
+	# getTargetState_topic = config["getTargetStateTopic"]
+	# getCurrentState_topic = config["getCurrentStateTopic"]
+	# readout = read_sensor(config["sensorpin"], config["state_pin"])
+	# if readout != DOORSTATE:
+	# 	DOORSTATE = readout
+	# 	publish_current_state(DOORSTATE)
+	# variable setup
 	method = config["method"]
 	stateHardware = config["stateHardware"]
 	ip = config["ip"]
 	port = config["port"]
 	relayPin, sensorPin, statePin = config["relayPin"], config["sensorPin"], config["statePin"]
+	auth_user = config["auth_user"]
+	auth_pass = config["auth_password"]
+	setTargetStateTopic = config["setTargetStateTopic"]
+	getTargetStateTopic = config["getTargetStateTopic"]
+	getCurrentStateTopic = config["getCurrentStateTopic"]
+	# GLOBAL STATE VAR
 	DOORSTATE = "C" # default state of closed
 
-	# Init GPIO
-	GPIO.setmode(GPIO.BCM)
-	# setup
-	GPIO.setup(relayPin, GPIO.OUT)
-	GPIO.setup(sensorPin, GPIO.OUT)
-	GPIO.setup(statePin, GPIO.IN)
-	# start sensor
-	GPIO.output(sensorPin, GPIO.HIGH)
-
-	# GLOBAL STATE VAR
+	# sensor readout
 	readout = read_sensor(sensorPin, statePin)
 
+	auth_array = [auth_user, auth_pass]
+	# setup mqtt
+	client = mqttsetup(ip, port, setTargetStateTopic, relayPin, auth_array)
+	# start infinite loop
+	thread_shred(client)
+
+	# start state publishing
+	while True:
+		try:
+			readout = read_sensor(sensorPin, statePin)
+			if readout != DOORSTATE:
+				DOORSTATE =  readout
+				publish_current_state(client, getCurrentStateTopic, readout)
+			time.sleep(.25)
+		except KeyboardInterrupt:
+			exit()
 
 # decides whether to open the garage door or not
 def decide_open(topic, ip, port):
@@ -171,6 +196,15 @@ def process_cmdline_arguments():
 		exit()
 	filename = sys.argv[1]
 	return filename
+
+def main():
+	# configuration
+	filename = process_cmdline_arguments()
+	config = read_configuration(filename)
+	mqttStateMode(config)
+
+if __name__ == '__main__':
+	main()
 
 # # runs the mqtt server
 # if __name__ == '__main__':
