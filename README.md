@@ -84,4 +84,4 @@ Circuit and connection diagrams coming soon. (This is really just how to wire a 
 
 ![Top View](images/top.JPG)
 ![Bottom View](images/bottom.JPG)
-![Hooked up view]("images/hooked up.JPG")
+![Hooked up view]("images/hooked_up.JPG")
