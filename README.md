@@ -19,6 +19,9 @@ The recommended way of using this project is as follows:
 5. Add the device to apple home
 6. Enjoy not having to open up a port and being able to open/close your garagedoor from anywhere
 
+Please do not leave the user and password as the default admin admin combo.
+
+
 ## Configuration format
 
 the following should be in your configuration file in this order.
